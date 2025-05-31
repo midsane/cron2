@@ -1,0 +1,49 @@
+name: run-node-script
+
+on:
+  schedule:
+    - cron: "20 23 * * *" # 4:50 AM IST for fetch_rss.js
+    - cron: "25 23 * * *" # 4:55 AM IST for embed.js
+  workflow_dispatch:
+
+jobs:
+  run-fetch-rss:
+    if: github.event.schedule == '20 23 * * *'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: building(installing dep/ts transpiling)
+        run: npm rund prod
+
+      - name: Run Fetch RSS
+        run: node dist/fetch_rss.js
+
+  run-embed:
+    if: github.event.schedule == '25 23 * * *'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: building(installing dep/ts transpiling)
+        run: npm run prod
+
+      - name: Run Embed Script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node dist/embed.js
