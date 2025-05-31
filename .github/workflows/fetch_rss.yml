@@ -2,7 +2,7 @@ name: run-fetch-rss
 
 on:
   schedule:
-    - cron: "8 12 * * *" # 5.38 pM IST
+    - cron: "40 12 * * *" # 6:10 PM IST
 
 jobs:
   fetch-rss:

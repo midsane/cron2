@@ -2,7 +2,7 @@ name: run-process-article
 
 on:
   schedule:
-    - cron: "9 12 * * *" # 5:39 AM IST
+    - cron: "41 12 * * *" # 6:11 PM IST
 
 jobs:
   embed-script:
