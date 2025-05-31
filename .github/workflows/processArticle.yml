@@ -2,8 +2,7 @@ name: run-process-article
 
 on:
   schedule:
-    - cron: "56 11 * * *" # 5:26 AM IST
-  workflow_dispatch:
+    - cron: "9 12 * * *" # 5:39 AM IST
 
 jobs:
   embed-script:
