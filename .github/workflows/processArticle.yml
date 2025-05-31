@@ -2,7 +2,7 @@ name: run-process-article
 
 on:
   schedule:
-    - cron: "44 11 * * *" # 5:14 AM IST
+    - cron: "56 11 * * *" # 5:26 AM IST
   workflow_dispatch:
 
 jobs:
