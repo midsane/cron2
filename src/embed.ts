@@ -1,6 +1,5 @@
 import { index } from "./createIndex.js";
 import { PrismaClient } from '../generated/prisma/client.js';
-// import Redis from 'ioredis';
 
 import dotenv from 'dotenv';
 dotenv.config({
@@ -11,6 +10,7 @@ dotenv.config({
 
 })
 
+const THRESHOLD_FOR_SIMILARITY = 0.4;
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
@@ -18,8 +18,6 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-// const QUEUE_KEY = 'news:articles';
-// const redis = new Redis(REDIS_KEY);
 const prisma = new PrismaClient()
 
 interface Article {
@@ -31,19 +29,6 @@ interface Article {
   imageUrl?: string,
   newsId: number
 }
-
-
-// redis.on('error', (err) => {
-//   console.error('Redis connection error:', err.message);
-//   process.exit(1);
-// });
-
-// process.on('SIGINT', async () => {
-//   console.log('Shutting down...');
-//   await redis.quit();
-//   await prisma.$disconnect();
-//   process.exit(0);
-// });
 
 const processArticle = async (article: Article) => {
   try {
@@ -62,11 +47,10 @@ const processArticle = async (article: Article) => {
 
     await (await index).upsertRecords([record]);
 
-    const isNew = rerankedResults.result.hits.length === 0 || rerankedResults.result.hits[0]._score < 0.4;
+    const isNew = rerankedResults.result.hits.length === 0 || rerankedResults.result.hits[0]._score < THRESHOLD_FOR_SIMILARITY;
 
     if (isNew) {
       console.log(`New article: ${article.link}`);
-      // Example Prisma operation
       const news = await prisma.news.create({
         data: {
           category: "dailyNews"
@@ -144,7 +128,7 @@ export const mainInit = async () => {
       return;
     }
     try {
-      const articles = JSON.parse(data);
+      const articles: Article[] = JSON.parse(data);
       console.log('Articles loaded successfully:', articles.length);
 
       articles.forEach((article: any) => {
@@ -164,35 +148,4 @@ export const mainInit = async () => {
 }
 
 mainInit();
-
-// export const main = async () => {
-//   try {
-//     while (true) {
-//       const [, articleStr] = (await redis.brpop(QUEUE_KEY, 30)) || [];
-//       if (!articleStr) {
-//         console.log('No articles in queue, waiting...');
-//         continue;
-//       }
-
-//       let article: Article;
-//       try {
-//         article = JSON.parse(articleStr);
-//         if (!article.link || !article.title || !article.source) {
-//           throw new Error('Invalid article format');
-//         }
-//       } catch (error) {
-//         console.error('Failed to parse article:', error);
-//         continue;
-//       }
-
-//       console.log(article);
-//       await processArticle(article);
-//     }
-//   } catch (error) {
-//     console.error('Error in processing loop:', error);
-//     await redis.quit();
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   }
-// };
 

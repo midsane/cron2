@@ -1,6 +1,5 @@
 import Parser from 'rss-parser';
 import { writeFile } from 'fs/promises';
-// import Redis from 'ioredis';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,13 +12,6 @@ const parser = new Parser({
         ]
     }
 });
-// const REDIS_KEY = process.env.REDIS_KEY;
-// if (!REDIS_KEY) {
-//     console.error("REDIS_KEY is not set in the environment variables.");
-//     process.exit(1);
-// }
-// const redis = new Redis(REDIS_KEY);
-
 
 const rssFeeds = [
     'https://feeds.bbci.co.uk/news/rss.xml',
@@ -27,8 +19,6 @@ const rssFeeds = [
     'https://timesofindia.indiatimes.com/rssfeedstopstories.cms',
     'https://feeds.feedburner.com/ndtvnews-top-stories'
 ];
-
-// const QUEUE_KEY = 'news:articles';
 
 const isToday = (dateString: any) => {
     const today = new Date();
@@ -65,16 +55,14 @@ for (const feedUrl of rssFeeds) {
                     imageUrl: extractImageUrl(item)
 
                 };
-                // await redis.lpush(QUEUE_KEY, JSON.stringify(article));
                 allArticles.push(article);
                 count++;
             }
         }
     } catch (err) {
-        console.error(`❌ Failed to fetch ${feedUrl}:`, err);
+        console.error(`Failed to fetch ${feedUrl}:`, err);
     }
 }
 
-console.log(`✅ Pushed ${count} articles to Redis queue "".`);
-// await redis.quit();
+console.log(`fetched ${count} articles".`);
 writeFile('articles.json', JSON.stringify(allArticles, null, 2))
