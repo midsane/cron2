@@ -2,7 +2,7 @@ name: run-fetch-rss
 
 on:
   schedule:
-    - cron: "34 11 * * *" # 5.04 pM IST
+    - cron: "43 11 * * *" # 5.13 pM IST
   workflow_dispatch:
 
 jobs:

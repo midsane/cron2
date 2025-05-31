@@ -2,11 +2,11 @@ name: run-process-article
 
 on:
   schedule:
-    - cron: "32 11 * * *" #  5:02 pm IST
+    - cron: "44 11 * * *" # 5:14 AM IST
   workflow_dispatch:
 
 jobs:
-  fetch-rss:
+  embed-script:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +21,8 @@ jobs:
       - name: building (installing deps / transpiling)
         run: npm run prod
 
-      - name: Run Fetch RSS Script
-        run: node dist/fetch_rss.js
+      - name: Run Embed Script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node dist/embed.js
